@@ -18,4 +18,13 @@ jobs:
           cache: pip
           cache-dependency-path: backend/requirements.txt
       - run: pip install -r requirements.txt
-      - run: SECRET_KEY="ci-only-secret-key-that-is-long-enough" DATABASE_URL="sqlite:///./ci.db" pytest -q
+      - name: Apply database migrations
+        run: alembic upgrade head
+        env:
+          SECRET_KEY: ci-only-secret-key-that-is-long-enough
+          DATABASE_URL: sqlite:///./ci.db
+      - name: Run backend tests
+        run: pytest -q
+        env:
+          SECRET_KEY: ci-only-secret-key-that-is-long-enough
+          DATABASE_URL: sqlite:///./ci.db
