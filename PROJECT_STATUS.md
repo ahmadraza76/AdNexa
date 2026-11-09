@@ -63,10 +63,11 @@ AdNexa is an independent, India-first and globally scalable advertising network 
 - Added frontend Docker image and integrated web service into Docker Compose. CI now runs backend PostgreSQL migrations/schema consistency/tests and frontend TypeScript/build checks.
 - GitHub Actions run #73 passed: backend job successful; frontend `npm run typecheck` and production `npm run build` successful. Backend PostgreSQL migration and `alembic check` also passed; pytest reported 11 passed (one upstream deprecation warning).
 - Added strict same-origin validation for the browser-facing login, registration and logout POST routes. The shared helper rejects cross-site Fetch Metadata, requires an Origin or Referer signal, rejects opaque/malformed origins, and compares the source origin with the request URL origin. Missing-origin requests fail closed.
-- CSRF change is committed, but frontend CI and browser behavior have not yet been re-run after this change. The helper currently protects the three auth mutation routes only; other future state-changing routes must use the same guard.
+- Added frontend Node test runner (`tsx`) and six automated CSRF unit tests covering same-origin Origin, same-origin Referer fallback, foreign Origin, cross-site Fetch Metadata, missing origin signals, and opaque `null` Origin. GitHub Actions now runs `npm test` between typecheck and production build.
+- The CSRF helper currently protects the three auth mutation routes only; other future state-changing routes must use the same guard. Unit tests do not replace deployed-browser/proxy verification.
 - Not yet verified: full browser end-to-end session behavior, Docker Compose full-stack startup, production deployment, email delivery, and real multi-worker behavior. Role-specific portals, email verification, password reset, refresh-token rotation, Redis-backed distributed throttling, admin lifecycle/audit, campaign delivery, analytics and financial workflows remain pending.
 
 ## Current checkpoint
 Current phase: Phase 1 — Foundation.
 Status: Backend foundation and first frontend shell are committed. GitHub Actions run #73 passed backend PostgreSQL migration/schema checks, 11 tests, frontend typecheck and production build. Phase 1 remains in progress; full browser and Compose verification are pending.
-Next: verify the CSRF change with GitHub Actions and browser requests; then implement refresh-token rotation, email verification and audited admin lifecycle, followed by browser end-to-end tests and role-specific workspace shells.
+Next: verify the new CSRF unit-test job in GitHub Actions; then implement refresh-token rotation, email verification and audited admin lifecycle, followed by browser end-to-end tests and role-specific workspace shells.
