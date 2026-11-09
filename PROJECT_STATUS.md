@@ -52,7 +52,9 @@ AdNexa is an independent, India-first and globally scalable advertising network 
 - Created working branch `develop/phase-1-foundation` from `main`.
 - Confirmed current main branch contained only the initial README.
 - Created this file as the project source of truth.
-- Phase 1 implementation has not yet been uploaded or runtime-tested.
+- Uploaded initial backend foundation: FastAPI app, settings, SQLAlchemy session, user/role models, password hashing, JWT access tokens, registration/login/current-user endpoints, Alembic environment and initial migration.
+- Added backend dependency manifest, environment template, Dockerfile, local PostgreSQL/API Compose stack, health endpoint test, and GitHub Actions CI workflow.
+- Current implementation is an initial foundation only; it has not yet been runtime-tested. Email verification, password reset, refresh-token rotation, rate limiting, admin provisioning, authorization policies, frontend, and broader tests remain pending.
 
 ## Current checkpoint
 Current phase: Phase 1 — Foundation.
