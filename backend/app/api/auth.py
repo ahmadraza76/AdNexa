@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 import jwt
 from app.core.config import settings
 from app.core.security import create_access_token, decode_access_token, hash_password, verify_password
+from app.core.rate_limit import limiter
 from app.database import get_db
 from app.models.user import User, UserRole, UserRoleAssignment
 from app.schemas.auth import LoginRequest, RegisterRequest, TokenResponse, UserResponse
@@ -22,7 +23,8 @@ def serialize_user(user: User, db: Session) -> UserResponse:
 
 
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
-def register(payload: RegisterRequest, db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def register(request: Request, payload: RegisterRequest, db: Session = Depends(get_db)):
     if payload.role not in PUBLIC_ROLES:
         raise HTTPException(status_code=403, detail="Admin registration is invitation-only")
     email = str(payload.email).lower()
@@ -41,7 +43,8 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=TokenResponse)
-def login(payload: LoginRequest, db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def login(request: Request, payload: LoginRequest, db: Session = Depends(get_db)):
     user = db.scalar(select(User).where(User.email == str(payload.email).lower()))
     if not user or not verify_password(payload.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid email or password", headers={"WWW-Authenticate": "Bearer"})
