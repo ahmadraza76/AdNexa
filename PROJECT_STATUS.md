@@ -58,9 +58,13 @@ AdNexa is an independent, India-first and globally scalable advertising network 
 - Added normalized email/name validation, reusable server-side role authorization dependency, login/registration throttling (10 requests/minute per client IP), and one-time CLI bootstrap for the first admin. Admin creation remains unavailable over public HTTP.
 - Added expanded authentication and role tests. GitHub Actions run #34 passed: PostgreSQL 16 migration applied, `alembic check` reported no schema drift, and pytest reported 11 passed (one upstream deprecation warning).
 - The in-memory rate-limit store is single-process only; shared Redis storage and trusted proxy configuration are required before multi-worker public deployment.
-- CI validates PostgreSQL migrations and the test suite; production runtime, real deployment, email delivery, and browser/client integration are not yet verified. Email verification, password reset, refresh-token rotation, admin lifecycle/audit, portal frontend and wider tests remain pending.
+- Added Next.js 15/React 19 frontend shell: landing page, advertiser/publisher/developer registration, login, authenticated account page, logout, and server-side API proxy routes.
+- Access tokens are stored in HttpOnly, SameSite=Lax cookies (Secure in production); browser JavaScript does not receive the bearer token. Protected dashboard data is fetched server-side from the FastAPI API.
+- Added frontend Docker image and integrated web service into Docker Compose. CI now runs backend PostgreSQL migrations/schema consistency/tests and frontend TypeScript/build checks.
+- GitHub Actions run #73 passed: backend job successful; frontend `npm run typecheck` and production `npm run build` successful. Backend PostgreSQL migration and `alembic check` also passed; pytest reported 11 passed (one upstream deprecation warning).
+- Not yet verified: full browser end-to-end session behavior, Docker Compose full-stack startup, production deployment, CSRF origin enforcement, email delivery, and real multi-worker behavior. Role-specific portals, email verification, password reset, refresh-token rotation, Redis-backed distributed throttling, admin lifecycle/audit, campaign delivery, analytics and financial workflows remain pending.
 
 ## Current checkpoint
 Current phase: Phase 1 — Foundation.
-Status: Initial backend foundation is committed. CI run #34 is green on commit `1d78967e8ffba65d2f1efb58e5bd5cac54905017`; PostgreSQL migration and 11 tests passed. Phase 1 is still in progress.
-Next: add backend account lifecycle/security features (refresh-token rotation, email verification and audited admin management), then build the Next.js frontend shell and verify end-to-end login.
+Status: Backend foundation and first frontend shell are committed. GitHub Actions run #73 passed backend PostgreSQL migration/schema checks, 11 tests, frontend typecheck and production build. Phase 1 remains in progress; full browser and Compose verification are pending.
+Next: add CSRF origin enforcement, refresh-token rotation, email verification and audited admin lifecycle; then add browser end-to-end tests and role-specific workspace shells.
