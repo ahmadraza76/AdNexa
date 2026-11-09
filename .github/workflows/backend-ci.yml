@@ -47,3 +47,22 @@ jobs:
         env:
           SECRET_KEY: ci-only-secret-key-that-is-long-enough
           DATABASE_URL: sqlite:///./ci.db
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package.json
+      - run: npm install
+      - run: npm run typecheck
+      - run: npm run build
+        env:
+          ADNEXA_API_URL: http://localhost:8000
+          NEXT_TELEMETRY_DISABLED: "1"
