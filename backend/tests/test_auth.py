@@ -29,19 +29,20 @@ def client() -> Generator[TestClient, None, None]:
     Base.metadata.drop_all(bind=engine)
 
 
+def register_payload(email="publisher@example.com", role="publisher"):
+    return {"email": email, "password": "a-very-long-test-password",
+            "full_name": "  Test   Publisher  ", "role": role}
+
+
 def test_register_login_and_me(client: TestClient):
-    registration = client.post("/api/v1/auth/register", json={
-        "email": "publisher@example.com",
-        "password": "a-very-long-test-password",
-        "full_name": "Test Publisher",
-        "role": "publisher",
-    })
+    registration = client.post("/api/v1/auth/register", json=register_payload())
     assert registration.status_code == 201
     token = registration.json()["access_token"]
     assert registration.json()["user"]["roles"] == ["publisher"]
+    assert registration.json()["user"]["full_name"] == "Test Publisher"
 
     login = client.post("/api/v1/auth/login", json={
-        "email": "PUBLISHER@example.com",
+        "email": " PUBLISHER@EXAMPLE.COM ",
         "password": "a-very-long-test-password",
     })
     assert login.status_code == 200
@@ -52,29 +53,40 @@ def test_register_login_and_me(client: TestClient):
 
 
 def test_duplicate_registration_is_rejected(client: TestClient):
-    payload = {
-        "email": "same@example.com",
-        "password": "a-very-long-test-password",
-        "full_name": "Same User",
-        "role": "advertiser",
-    }
+    payload = register_payload(email="same@example.com", role="advertiser")
     assert client.post("/api/v1/auth/register", json=payload).status_code == 201
     assert client.post("/api/v1/auth/register", json=payload).status_code == 409
 
 
 def test_invalid_login_is_rejected(client: TestClient):
     response = client.post("/api/v1/auth/login", json={
-        "email": "missing@example.com",
-        "password": "wrong-password",
+        "email": "missing@example.com", "password": "wrong-password",
     })
     assert response.status_code == 401
 
 
 def test_admin_cannot_self_register(client: TestClient):
-    response = client.post("/api/v1/auth/register", json={
-        "email": "admin@example.com",
-        "password": "a-very-long-test-password",
-        "full_name": "Public Admin",
-        "role": "admin",
-    })
+    response = client.post("/api/v1/auth/register", json=register_payload(
+        email="admin@example.com", role="admin"))
     assert response.status_code == 403
+
+
+def test_me_requires_authentication(client: TestClient):
+    assert client.get("/api/v1/auth/me").status_code == 401
+
+
+def test_invalid_access_token_is_rejected(client: TestClient):
+    response = client.get("/api/v1/auth/me", headers={"Authorization": "Bearer not-a-valid-token"})
+    assert response.status_code == 401
+
+
+def test_short_password_is_rejected(client: TestClient):
+    payload = register_payload(email="weak@example.com")
+    payload["password"] = "short"
+    assert client.post("/api/v1/auth/register", json=payload).status_code == 422
+
+
+def test_blank_full_name_is_rejected(client: TestClient):
+    payload = register_payload(email="blank@example.com")
+    payload["full_name"] = "   "
+    assert client.post("/api/v1/auth/register", json=payload).status_code == 422
