@@ -1,12 +1,13 @@
 """Create initial users and role assignments."""
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 revision = "0001_initial_users"
 down_revision = None
 branch_labels = None
 depends_on = None
-user_role = sa.Enum("advertiser", "publisher", "developer", "admin", name="user_role")
+user_role = postgresql.ENUM("advertiser", "publisher", "developer", "admin", name="user_role", create_type=False)
 
 
 def upgrade() -> None:
