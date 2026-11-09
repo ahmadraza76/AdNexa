@@ -55,9 +55,12 @@ AdNexa is an independent, India-first and globally scalable advertising network 
 - Uploaded initial backend foundation: FastAPI app, settings, SQLAlchemy session, user/role models, password hashing, JWT access tokens, registration/login/current-user endpoints, Alembic environment and initial migration.
 - Added backend dependency manifest, environment template, Dockerfile, local PostgreSQL/API Compose stack, health endpoint test, authentication integration tests, and GitHub Actions CI workflow.
 - Added repository README with local setup instructions, initial API routes and explicit implementation limitations.
-- Current implementation is an initial foundation only; it has not yet been runtime-tested. Email verification, password reset, refresh-token rotation, rate limiting, admin provisioning, authorization policies, frontend, and broader tests remain pending.
+- Added normalized email/name validation, reusable server-side role authorization dependency, login/registration throttling (10 requests/minute per client IP), and one-time CLI bootstrap for the first admin. Admin creation remains unavailable over public HTTP.
+- Added expanded authentication and role tests. GitHub Actions run #34 passed: PostgreSQL 16 migration applied, `alembic check` reported no schema drift, and pytest reported 11 passed (one upstream deprecation warning).
+- The in-memory rate-limit store is single-process only; shared Redis storage and trusted proxy configuration are required before multi-worker public deployment.
+- CI validates PostgreSQL migrations and the test suite; production runtime, real deployment, email delivery, and browser/client integration are not yet verified. Email verification, password reset, refresh-token rotation, admin lifecycle/audit, portal frontend and wider tests remain pending.
 
 ## Current checkpoint
 Current phase: Phase 1 — Foundation.
-Status: Initial backend code and tests are committed; runtime/CI verification is still pending.
-Next: inspect GitHub Actions results, correct any failures, expand auth/security tests, then add the Next.js frontend shell.
+Status: Initial backend foundation is committed. CI run #34 is green on commit `1d78967e8ffba65d2f1efb58e5bd5cac54905017`; PostgreSQL migration and 11 tests passed. Phase 1 is still in progress.
+Next: add backend account lifecycle/security features (refresh-token rotation, email verification and audited admin management), then build the Next.js frontend shell and verify end-to-end login.
