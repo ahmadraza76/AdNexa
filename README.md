@@ -44,4 +44,4 @@ SECRET_KEY="local-test-secret-key-that-is-at-least-32-chars" DATABASE_URL="sqlit
 
 ## Current implementation status
 
-Phase 1 is in progress. This is an early foundation, not a production-ready advertising platform. Email verification, password reset, refresh-token rotation, Redis-backed distributed throttling, admin lifecycle management and audit trail, portal frontend, campaign delivery, analytics, billing and payouts are not implemented yet. Never use real customer funds or production traffic with this build.
+Phase 1 is in progress. This is an early foundation, not a production-ready advertising platform. The initial landing page, registration/login screens and authenticated account shell are implemented. Role-specific advertiser, publisher and developer dashboards are not implemented yet. Email verification, password reset, refresh-token rotation, Redis-backed distributed throttling, admin lifecycle management and audit trail, campaign delivery, analytics, billing and payouts are not implemented yet. Never use real customer funds or production traffic with this build.
