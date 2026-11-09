@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { backendFetch } from "@/lib/backend";
+import { rejectCrossOriginRequest } from "@/lib/csrf";
 
 export async function POST(request: NextRequest) {
+  const originError = rejectCrossOriginRequest(request);
+  if (originError) return originError;
+
   let payload: unknown;
   try {
     payload = await request.json();
