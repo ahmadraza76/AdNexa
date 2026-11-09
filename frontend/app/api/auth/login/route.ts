@@ -24,12 +24,14 @@ export async function POST(request: NextRequest) {
     }
 
     const response = NextResponse.json({ user: data.user });
+    const secure = process.env.NODE_ENV === "production";
     response.cookies.set("adnexa_access_token", data.access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
+      httpOnly: true, secure, sameSite: "lax", path: "/",
       maxAge: Math.max(0, Number(data.expires_in) || 0),
+    });
+    response.cookies.set("adnexa_refresh_token", data.refresh_token, {
+      httpOnly: true, secure, sameSite: "lax", path: "/api/auth",
+      maxAge: Math.max(0, Number(data.refresh_expires_in) || 0),
     });
     return response;
   } catch {
