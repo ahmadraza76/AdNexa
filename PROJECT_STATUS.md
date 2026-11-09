@@ -53,10 +53,11 @@ AdNexa is an independent, India-first and globally scalable advertising network 
 - Confirmed current main branch contained only the initial README.
 - Created this file as the project source of truth.
 - Uploaded initial backend foundation: FastAPI app, settings, SQLAlchemy session, user/role models, password hashing, JWT access tokens, registration/login/current-user endpoints, Alembic environment and initial migration.
-- Added backend dependency manifest, environment template, Dockerfile, local PostgreSQL/API Compose stack, health endpoint test, and GitHub Actions CI workflow.
+- Added backend dependency manifest, environment template, Dockerfile, local PostgreSQL/API Compose stack, health endpoint test, authentication integration tests, and GitHub Actions CI workflow.
+- Added repository README with local setup instructions, initial API routes and explicit implementation limitations.
 - Current implementation is an initial foundation only; it has not yet been runtime-tested. Email verification, password reset, refresh-token rotation, rate limiting, admin provisioning, authorization policies, frontend, and broader tests remain pending.
 
 ## Current checkpoint
 Current phase: Phase 1 — Foundation.
-Status: Planning/tracking committed first; implementation pending.
-Next: implement the backend foundation and migrations, then frontend shell, then tests and verification.
+Status: Initial backend code and tests are committed; runtime/CI verification is still pending.
+Next: inspect GitHub Actions results, correct any failures, expand auth/security tests, then add the Next.js frontend shell.
