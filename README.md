@@ -15,8 +15,11 @@ Requirements: Docker Engine with the Compose plugin, or Python 3.12+ and Postgre
 1. Copy `backend/.env.example` to `backend/.env`.
 2. Replace `SECRET_KEY` with a random secret of at least 32 characters. Never commit the real `.env`.
 3. Start the stack: `docker compose up --build`.
-4. API health: `http://localhost:8000/health`.
-5. OpenAPI docs: `http://localhost:8000/docs`.
+4. Web app: `http://localhost:3000`.
+5. API health: `http://localhost:8000/health`.
+6. OpenAPI docs: `http://localhost:8000/docs`.
+
+For frontend-only development, run `cd frontend && npm install && ADNEXA_API_URL=http://localhost:8000 npm run dev`.
 
 The Compose database password is for local development only. Do not reuse it in production.
 
