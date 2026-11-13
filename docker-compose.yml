@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_DB: adnexa
       POSTGRES_USER: adnexa
-      POSTGRES_PASSWORD: adnexa_dev_only
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-adnexa_dev_only}
     ports:
       - "5432:5432"
     volumes:
@@ -14,24 +14,41 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+
   api:
     build: ./backend
-    env_file:
-      - ./backend/.env
+    environment:
+      APP_NAME: AdNexa API
+      ENVIRONMENT: development
+      API_V1_PREFIX: /api/v1
+      SECRET_KEY: ${ADNEXA_SECRET_KEY:-local-compose-only-secret-change-before-deployment}
+      ACCESS_TOKEN_EXPIRE_MINUTES: 20
+      DATABASE_URL: postgresql+psycopg://adnexa:${POSTGRES_PASSWORD:-adnexa_dev_only}@db:5432/adnexa
+      CORS_ORIGINS: http://localhost:3000
     ports:
       - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
     command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
   web:
     build: ./frontend
     environment:
       ADNEXA_API_URL: http://api:8000
       NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
     ports:
       - "3000:3000"
     depends_on:
-      - api
+      api:
+        condition: service_healthy
+
 volumes:
   postgres_data:
