@@ -95,3 +95,11 @@ Next: add and run real browser multi-tab E2E coverage for simultaneous session b
 - CI run #43438123051 completed successfully: backend PostgreSQL migration, Alembic consistency and backend tests passed; frontend typecheck, all 8 Node tests, Playwright Chromium multi-tab E2E and Next.js production build passed.
 - npm install reported existing dependency audit findings and a Next.js 15.3.3 security warning. Dependency remediation is still required; no automatic force-upgrade was applied.
 - Phase 1 remains in progress. No real browser test result, Docker Compose full-stack verification, or production readiness claim is made.
+
+### 2026-11-13 — Docker Compose full-stack verification
+- Fixed fresh-clone Compose startup: the API no longer requires an untracked backend/.env file; Compose now injects development-only settings and uses the internal PostgreSQL service hostname.
+- Added database/API health checks and made the web service wait for a healthy API.
+- Updated README local startup instructions and clarified that Compose defaults are development-only.
+- Added a dedicated GitHub Actions Compose integration job to validate configuration, build and start PostgreSQL + FastAPI + Next.js, and probe API health plus the frontend login route.
+- CI run #43438561783 is validating the Compose integration job; its result is pending at this checkpoint. Do not mark Compose full-stack verification complete until the job passes.
+- Phase 1 remains in progress. Production secrets, Redis-backed distributed rate limiting, email verification/password reset, admin lifecycle/audit, role workspaces and remaining product modules are not complete.
