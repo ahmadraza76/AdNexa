@@ -73,3 +73,16 @@ AdNexa is an independent, India-first and globally scalable advertising network 
 Current phase: Phase 1 — Foundation.
 Status: Backend foundation and first frontend shell are committed. GitHub Actions run #73 passed backend PostgreSQL migration/schema checks, 11 tests, frontend typecheck and production build. Phase 1 remains in progress; full browser and Compose verification are pending.
 Next: verify refresh-token migration, replay/logout tests, frontend typecheck and production build in GitHub Actions; then add browser session tests and email verification, followed by audited admin lifecycle and role-specific workspace shells.
+
+### 2026-11-13 — Cross-tab session refresh
+- Added `frontend/lib/session-lock.ts` using the browser Web Locks API with an exclusive same-origin lock for dashboard session bootstrap/refresh requests.
+- Updated `frontend/app/dashboard/dashboard-session.tsx` so session requests run inside the cross-tab lock. Browsers without Web Locks fail closed with a visible retry/sign-in message; no uncoordinated refresh request is sent.
+- Added `frontend/tests/session-lock.test.ts` with regression coverage for serialized operations and the unsupported-lock case.
+- GitHub Actions run #43437560103 completed successfully: frontend and backend test jobs both passed. This verifies CI, not a real multi-tab browser session.
+- The PR #2 P2 review finding is addressed in the dashboard refresh path by cross-tab serialization. Real browser E2E testing remains required before treating the session flow as fully verified.
+- Phase 1 remains in progress. Docker Compose full-stack startup, deployed-browser/proxy behavior, email verification, password reset, Redis-backed distributed throttling, audited admin lifecycle, and role-specific workspaces remain pending.
+
+## Current checkpoint — 2026-11-13
+Current phase: Phase 1 — Foundation.
+Status: Cross-tab refresh serialization and unit regression tests are committed on `feature/dashboard-session-refresh`. GitHub Actions run #43437560103 passed both jobs. No browser E2E or full-stack Compose verification has been completed; do not mark Phase 1 complete.
+Next: add and run real browser multi-tab E2E coverage for simultaneous session bootstrap/refresh, then verify Docker Compose full-stack startup.
