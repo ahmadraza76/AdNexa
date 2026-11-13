@@ -73,3 +73,33 @@ AdNexa is an independent, India-first and globally scalable advertising network 
 Current phase: Phase 1 — Foundation.
 Status: Backend foundation and first frontend shell are committed. GitHub Actions run #73 passed backend PostgreSQL migration/schema checks, 11 tests, frontend typecheck and production build. Phase 1 remains in progress; full browser and Compose verification are pending.
 Next: verify refresh-token migration, replay/logout tests, frontend typecheck and production build in GitHub Actions; then add browser session tests and email verification, followed by audited admin lifecycle and role-specific workspace shells.
+
+### 2026-11-13 — Cross-tab session refresh
+- Added `frontend/lib/session-lock.ts` using the browser Web Locks API with an exclusive same-origin lock for dashboard session bootstrap/refresh requests.
+- Updated `frontend/app/dashboard/dashboard-session.tsx` so session requests run inside the cross-tab lock. Browsers without Web Locks fail closed with a visible retry/sign-in message; no uncoordinated refresh request is sent.
+- Added `frontend/tests/session-lock.test.ts` with regression coverage for serialized operations and the unsupported-lock case.
+- GitHub Actions run #43437560103 completed successfully: frontend and backend test jobs both passed. This verifies CI, not a real multi-tab browser session.
+- The PR #2 P2 review finding is addressed in the dashboard refresh path by cross-tab serialization. Real browser E2E testing remains required before treating the session flow as fully verified.
+- Phase 1 remains in progress. Docker Compose full-stack startup, deployed-browser/proxy behavior, email verification, password reset, Redis-backed distributed throttling, audited admin lifecycle, and role-specific workspaces remain pending.
+
+## Current checkpoint — 2026-11-13
+Current phase: Phase 1 — Foundation.
+Status: Cross-tab refresh serialization and unit regression tests are committed on `feature/dashboard-session-refresh`. GitHub Actions run #43437560103 passed both jobs. No browser E2E or full-stack Compose verification has been completed; do not mark Phase 1 complete.
+Next: add and run real browser multi-tab E2E coverage for simultaneous session bootstrap/refresh, then verify Docker Compose full-stack startup.
+### 2026-11-13 — Browser E2E harness
+- Added Playwright test tooling and frontend/playwright.config.ts.
+- Added frontend/e2e/session-refresh.spec.ts: opens two real Chromium tabs, starts both dashboard session bootstraps together, rotates the refresh cookie in the first response, and asserts the second tab sends the rotated cookie rather than replaying the old one.
+- Updated frontend CI to install Chromium and run npm run test:e2e before the production build.
+- First CI attempt exposed a GitHub-hosted ubuntu-latest image newer than Playwright 1.56.1 supports. Pinned the frontend browser job to ubuntu-24.04; the subsequent browser run passed.
+- CI run #43438025401: frontend typecheck and all 8 Node tests passed; browser installation failed on the unsupported runner image. This was an infrastructure compatibility failure, not a passing E2E result.
+- CI run #43438123051 completed successfully: backend PostgreSQL migration, Alembic consistency and backend tests passed; frontend typecheck, all 8 Node tests, Playwright Chromium multi-tab E2E and Next.js production build passed.
+- npm install reported existing dependency audit findings and a Next.js 15.3.3 security warning. Dependency remediation is still required; no automatic force-upgrade was applied.
+- Phase 1 remains in progress. No real browser test result, Docker Compose full-stack verification, or production readiness claim is made.
+
+### 2026-11-13 — Docker Compose full-stack verification
+- Fixed fresh-clone Compose startup: the API no longer requires an untracked backend/.env file; Compose now injects development-only settings and uses the internal PostgreSQL service hostname.
+- Added database/API health checks and made the web service wait for a healthy API.
+- Updated README local startup instructions and clarified that Compose defaults are development-only.
+- Added a dedicated GitHub Actions Compose integration job to validate configuration, build and start PostgreSQL + FastAPI + Next.js, and probe API health plus the frontend login route.
+- CI run #43438561783 is validating the Compose integration job; its result is pending at this checkpoint. Do not mark Compose full-stack verification complete until the job passes.
+- Phase 1 remains in progress. Production secrets, Redis-backed distributed rate limiting, email verification/password reset, admin lifecycle/audit, role workspaces and remaining product modules are not complete.

@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/**/*.test.ts"
+    "test": "tsx --test tests/**/*.test.ts",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "next": "15.3.3",
@@ -19,6 +20,7 @@
     "@types/react": "19.1.6",
     "@types/react-dom": "19.1.6",
     "typescript": "5.8.3",
-    "tsx": "4.19.3"
+    "tsx": "4.19.3",
+    "@playwright/test": "1.56.1"
   }
 }
