@@ -4,6 +4,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LogoutButton } from "./logout-button";
+import {
+  SESSION_LOCK_UNAVAILABLE_MESSAGE,
+  withSessionRefreshLock,
+} from "@/lib/session-lock";
 
 type Account = {
   id: number;
@@ -23,12 +27,14 @@ export function DashboardSession() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("/api/auth/session", {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
-        signal,
-      });
+      const response = await withSessionRefreshLock(navigator.locks, () =>
+        fetch("/api/auth/session", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          signal,
+        }),
+      );
 
       if (response.status === 401) {
         router.replace("/login");
@@ -42,7 +48,11 @@ export function DashboardSession() {
       setAccount(data.user as Account);
     } catch (cause) {
       if (cause instanceof Error && cause.name === "AbortError") return;
-      setError("AdNexa API is unavailable. Check your connection and retry.");
+      setError(
+        cause instanceof Error && cause.message === SESSION_LOCK_UNAVAILABLE_MESSAGE
+          ? SESSION_LOCK_UNAVAILABLE_MESSAGE
+          : "AdNexa API is unavailable. Check your connection and retry.",
+      );
     } finally {
       if (!signal?.aborted) setLoading(false);
     }
