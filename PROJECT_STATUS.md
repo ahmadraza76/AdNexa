@@ -86,3 +86,11 @@ Next: verify refresh-token migration, replay/logout tests, frontend typecheck an
 Current phase: Phase 1 — Foundation.
 Status: Cross-tab refresh serialization and unit regression tests are committed on `feature/dashboard-session-refresh`. GitHub Actions run #43437560103 passed both jobs. No browser E2E or full-stack Compose verification has been completed; do not mark Phase 1 complete.
 Next: add and run real browser multi-tab E2E coverage for simultaneous session bootstrap/refresh, then verify Docker Compose full-stack startup.
+### 2026-11-13 — Browser E2E harness
+- Added Playwright test tooling and frontend/playwright.config.ts.
+- Added frontend/e2e/session-refresh.spec.ts: opens two real Chromium tabs, starts both dashboard session bootstraps together, rotates the refresh cookie in the first response, and asserts the second tab sends the rotated cookie rather than replaying the old one.
+- Updated frontend CI to install Chromium and run npm run test:e2e before the production build.
+- First CI attempt exposed a GitHub-hosted ubuntu-latest image newer than Playwright 1.56.1 supports. Pinned the frontend browser job to ubuntu-24.04; the browser test has not yet passed in CI.
+- CI run #43438025401: frontend typecheck and all 8 Node tests passed; browser installation failed on the unsupported runner image. This is an infrastructure compatibility failure, not a passing E2E result.
+- npm install reported existing dependency audit findings and a Next.js 15.3.3 security warning. Dependency remediation is still required; no automatic force-upgrade was applied.
+- Phase 1 remains in progress. No real browser test result, Docker Compose full-stack verification, or production readiness claim is made.
