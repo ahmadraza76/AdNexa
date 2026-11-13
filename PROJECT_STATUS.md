@@ -90,7 +90,8 @@ Next: add and run real browser multi-tab E2E coverage for simultaneous session b
 - Added Playwright test tooling and frontend/playwright.config.ts.
 - Added frontend/e2e/session-refresh.spec.ts: opens two real Chromium tabs, starts both dashboard session bootstraps together, rotates the refresh cookie in the first response, and asserts the second tab sends the rotated cookie rather than replaying the old one.
 - Updated frontend CI to install Chromium and run npm run test:e2e before the production build.
-- First CI attempt exposed a GitHub-hosted ubuntu-latest image newer than Playwright 1.56.1 supports. Pinned the frontend browser job to ubuntu-24.04; the browser test has not yet passed in CI.
-- CI run #43438025401: frontend typecheck and all 8 Node tests passed; browser installation failed on the unsupported runner image. This is an infrastructure compatibility failure, not a passing E2E result.
+- First CI attempt exposed a GitHub-hosted ubuntu-latest image newer than Playwright 1.56.1 supports. Pinned the frontend browser job to ubuntu-24.04; the subsequent browser run passed.
+- CI run #43438025401: frontend typecheck and all 8 Node tests passed; browser installation failed on the unsupported runner image. This was an infrastructure compatibility failure, not a passing E2E result.
+- CI run #43438123051 completed successfully: backend PostgreSQL migration, Alembic consistency and backend tests passed; frontend typecheck, all 8 Node tests, Playwright Chromium multi-tab E2E and Next.js production build passed.
 - npm install reported existing dependency audit findings and a Next.js 15.3.3 security warning. Dependency remediation is still required; no automatic force-upgrade was applied.
 - Phase 1 remains in progress. No real browser test result, Docker Compose full-stack verification, or production readiness claim is made.
